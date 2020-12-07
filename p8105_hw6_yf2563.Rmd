@@ -5,7 +5,7 @@ date: "12/7/2020"
 output: github_document
 ---
 
-```{r}
+```{r, message=FALSE}
 library(tidyverse)
 
 knitr::opts_chunk$set(
@@ -21,3 +21,32 @@ scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
+## Problem 1
+
+The Washington Post has gathered data on homicides in 50 large U.S. cities.
+
+- Create a city_state variable (e.g. “Baltimore, MD”)
+- binary variable indicating whether the homicide is solved. 
+- Omit cities Dallas, TX; Phoenix, AZ; and Kansas City, MO – these don’t report victim race. 
+- omit Tulsa, AL – this is a data entry mistake. 
+- For this problem, limit your analysis those for whom victim_race is white or black. 
+- Be sure that victim_age is numeric.
+
+```{r, message=FALSE}
+homicide_df = 
+  read_csv("data/homicide-data.csv", na = c("", "NA", "Unknown")) %>% 
+  mutate(
+    city_state = str_c(city, state, sep = ", "),
+    victim_age = as.numeric(victim_age),
+    resolution = case_when(
+      disposition == "Closed without arrest" ~ 0,
+      disposition == "Open/No arrest"        ~ 0,
+      disposition == "Closed by arrest"      ~ 1)
+  ) %>% 
+  filter(
+    victim_race %in% c("White", "Black"),
+    city_state != "Tulsa, AL") %>% 
+  select(city_state, resolution, victim_age, victim_race, victim_sex)
+
+head(homicide_df)
+```
