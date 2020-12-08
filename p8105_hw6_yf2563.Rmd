@@ -8,6 +8,7 @@ output: github_document
 ```{r, message=FALSE}
 library(tidyverse)
 library(modelr)
+library(patchwork)
 
 knitr::opts_chunk$set(
   message = F,
@@ -323,3 +324,43 @@ final_result =
 
 final_result
 ```
+
+
+
+- Plot the distribution of your estimates, and describe these in words. 
+
+
+```{r}
+variable1_plot = 
+  final_result %>%
+  ggplot(aes(x = r.squared)) + 
+  geom_density()+
+  labs(
+    title = "Distribution of R Squared Estimates 5000 Bootstrap Samples",
+    x = "Estimate of R Squared",
+    y = "Density"
+  )
+```
+
+```{r}
+variable2_plot = 
+  final_result %>%
+  ggplot(aes(x = variable2)) + 
+  geom_density()+
+  labs(
+    title = "Distribution of log coefficients 5000 Bootstrap Samples",
+    x = "Estimate of log coefficients",
+    y = "Density"
+  )
+```
+
+```{r}
+variable1_plot + variable2_plot
+```
+
+**Interpretation:** both plots follows bell-shaped, which means that both variables we estimated are approximate follows normal distribution
+
+
+
+  
+  
