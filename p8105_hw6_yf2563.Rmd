@@ -361,6 +361,23 @@ variable1_plot + variable2_plot
 **Interpretation:** both plots follows bell-shaped, which means that both variables we estimated are approximate follows normal distribution
 
 
+- Using the 5000 bootstrap estimates, identify the 2.5% and 97.5% quantiles to provide a 95% confidence interval for 2 interested variables. 
 
-  
-  
+```{r}
+final_result %>% 
+  pivot_longer(
+    r.squared : variable2,
+    names_to = "variables",
+    values_to = "value"
+  ) %>% 
+  group_by(variables) %>% 
+  summarize(
+    ci_lower = quantile(value, 0.025), 
+    ci_upper = quantile(value, 0.975))
+```
+
+
+Thus 2.5% and 97.5% quantiles:
+
+- $\widehat r ^2$: (0.8879076, 0.925854)
+- ${log(\widehat \beta_0 * \widehat \beta_1)}$: (1.9729733, 2.052170)
