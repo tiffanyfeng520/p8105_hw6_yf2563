@@ -239,3 +239,87 @@ weather_df =
 head(weather_df)
 ```
 
+
+#### 3.1
+
+simple linear regression: 
+
+- tmax as the response and tmin as the predictor
+- interested in the distribution of two quantities estimated from these data:
+  - ${\widehat r ^2}$
+  - ${log(\widehat \beta_0 * \widehat \beta_1)}$
+  
+- Use 5000 bootstrap samples and, for each bootstrap sample, produce estimates of these two quantities. 
+
+Step1: clean data
+```{r}
+# clean data
+prob3_df = 
+  weather_df %>% 
+  select(tmax, tmin) %>% 
+  rename(
+    y = tmax,
+    x = tmin
+  )
+
+head(prob3_df)
+```
+Step2: strap setting
+```{r}
+#strap setting
+strap_samples = 5000
+
+boot_sample = function(df) {
+  sample_frac(df, replace = TRUE)
+}
+
+boot_straps = 
+  data_frame(
+    strap_number = 1:strap_samples,
+    strap_sample = rerun(strap_samples, boot_sample(prob3_df))
+  )
+```
+
+Step3: for ${\widehat r ^2}$
+```{r}
+bootstrap_results_1 = 
+  boot_straps %>% 
+  mutate(
+    models = map(strap_sample, ~lm(y ~ x, data = .x) ),
+    results = map(models, broom::glance)) %>% 
+  select(-strap_sample, -models) %>%
+  unnest(results) %>%
+  select(strap_number, r.squared)
+```
+
+
+Step4: for ${log(\widehat \beta_0 * \widehat \beta_1)}$
+```{r}
+bootstrap_results_2 = 
+  boot_straps %>% 
+  mutate(
+    models = map(strap_sample, ~lm(y ~ x, data = .x) ),
+    results = map(models, broom::tidy)) %>% 
+  select(-strap_sample, -models) %>% 
+  unnest(results)
+
+bootstrap_results_2 = 
+  bootstrap_results_2 %>% 
+  select(strap_number, term, estimate) %>% 
+  pivot_wider(
+    names_from = term,
+    values_from = estimate
+  ) %>% 
+  janitor::clean_names() %>% 
+  mutate(variable2 = log(intercept * x)) %>% 
+  select(strap_number, variable2)
+```
+
+Step5: join two results
+```{r}
+final_result = 
+  bootstrap_results_1 %>% 
+  left_join(bootstrap_results_2, by = "strap_number")
+
+final_result
+```
