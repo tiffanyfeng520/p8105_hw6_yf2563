@@ -152,6 +152,11 @@ baby_df %>%
   stat_smooth(method = "lm")
 ```
 
+**Interpretation:**
+
+- Model: the `model2_2` I created is a simple linear regression, with gestational age as predictor (X) and birthweight as Y
+- Plot: from the plot, since the residuals are relatively evenly distributed around and below y = 0. Thus, it satisfied the linear assumption.
+
 
 
 #### 2.3 Compare your model to two others:
@@ -176,7 +181,6 @@ model2_3_2 =
 ```
 
 - Make this comparison in terms of the cross-validated prediction error; use crossv_mc and functions in purrr as appropriate.
-
 
 ```{r}
 cv_df =
@@ -219,6 +223,7 @@ cv_df %>%
   geom_violin()
 ```
 
+**Interpretation:** The first model have the highest rmse, and the third model have the lowest rmse. Thus, the last one have the lowest prediction error, which means that the model with the predictors of head circumference, length, sex, and all interactions (including the three-way interaction) between these is the best among the three models.
 
 ## Problem 3
 
