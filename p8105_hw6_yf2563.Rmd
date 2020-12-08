@@ -115,6 +115,7 @@ models_results_df %>%
 
 ## Problem 2
 
+#### 2.1
 Load and clean the data for regression analysis (i.e. convert numeric to factor where appropriate, check for missing data, etc.).
 
 ```{r}
@@ -126,6 +127,27 @@ baby_df =
          mrace = as.factor(mrace))
 
 head(baby_df)
+```
+
+
+#### 2.2
+
+- Propose a regression model for birthweight. 
+- This model may be based on a hypothesized structure for the factors that underly birthweight, on a data-driven model-building process, or a combination of the two. 
+- Describe your modeling process and show a plot of model residuals against fitted values – use add_predictions and add_residuals in making this plot.
+
+```{r}
+model2_2 = lm(bwt ~ gaweeks, data = baby_df)
+```
+
+
+```{r}
+baby_df %>% 
+  modelr::add_residuals(model2_2) %>% 
+  modelr::add_predictions(model2_2) %>% 
+  ggplot(aes(x = pred, y = resid)) + 
+  geom_point()+
+  stat_smooth(method = "lm")
 ```
 
 
